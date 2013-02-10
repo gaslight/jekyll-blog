@@ -28,6 +28,19 @@
     </div>
     <div class="three columns">
       <h3>Sidebar</h3>
+      <h4>Meta</h4>
+      <ul>
+        <li>Author: {{ page.author }}</li>
+        <li>Posted On: {{ page.date || date_to_string }}</li>
+        <li>Tags: 
+          <ul>
+            {% for tag in page.tags %}
+              <li><a href="#">{{ tag }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+      <h4>Stuff</h4>
       <p>Search and all that jazz.</p>
     </div>
   </div>
