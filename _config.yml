@@ -5,6 +5,7 @@ pygments:    true
 markdown:    redcarpet
 server:      true
 permalink:   date
+baseurl:     /jekyll-blog
 
 authors:
   joelturnbull:
