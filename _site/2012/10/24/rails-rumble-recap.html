@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>Rails Rumble Recap</title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
+  <link href="/stylesheets/themes/blackboard.css" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr.foundation.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Gaslight</h2>
+      <a href="/index.html">Back</a>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="nine columns">
+      <p>Last weekend I participated the <a href="http://railsrumble.com/">2012 Rails Rumble</a>. The Rumble is  programming competition where teams of up to 4 people have 48 hours to build a web application with Ruby on Rails.</p>
+
+<p>My teammate <a href="https://twitter.com/joshowens">@joshowens</a> had actually won the contest in 2007 with his recipe building application &#8220;Tasty Planner&#8221;. In the years since, I got the impression that the field had grown quite a bit. When I heard that there were 500 registrations this year, I was wondering what I was getting myself into.</p>
+
+<p>After the fact though, my attitude is that this competition is totally winnable. If you know how to play the game, a decent idea and good planning beforehand can take you a long way.</p>
+
+<h2>ShareBelt</h2>
+
+<p>The idea for the application was hatched by Josh. It&#8217;s a tool for encouraging sharing on website or blog. It displays a single, prominent share option onto a web page, tailored to each visitor based on where they came from. That message and share button floats in a bar at the top or bottom of any page.</p>
+
+<p>It&#8217;s called &#8220;<a href="http://sharebelt.com/">Sharebelt</a>&#8221;. If a user arrives at your ShareBelt-enabled blog from Twitter, they might see a message at the top of the page:  &#8220;Hi I see you came from Twitter, why not [Retweet] this?&#8221;, with a button allowing them to do so.</p>
+
+<div style="margin: 30px 0 30px 0; text-align:center; width: 100%"><img src="http://media.tumblr.com/tumblr_mcfc4blx6P1r9fv8b.png"/></div>
+
+<p>Our initial prototype would recognize visitors from, and allow sharing to Twitter and Facebook. Our backend administration application would capture statistics, and report on daily Sharebelt impressions, clicks, tweets, shares, and likes for our users.</p>
+
+<h2>ShareBelt Implementation</h2>
+
+<p>There was a pretty obvious separation in the technology required to make ShareBelt happen, so splitting the work between two developers was pretty cut and dry.</p>
+
+<p>The ShareBelt itself is implemented on the client-side with Javascript. A ShareBelt account holder receives a snippet of html code to paste into their website, anywhere they want the ShareBelt to pop in. The snippet contains an id that represents the site of the account holder in the ShareBelt system, and a script tag that loads the main Javascript code from a location on the ShareBelt server.</p>
+
+<p>The ShareBelt backend is the Rails piece. It provides routes for the data capturing, and an administration interface for ShareBelt clients. Data is captured when users take actions like tweeting or liking. The administration interface allows ShareBelt users to set up and see reporting and analytics on any number websites.</p>
+
+<h2>Technical Challenges</h2>
+
+<p>As the main Javascript developer, my first challenge was wrestling with cross-domain Ajax requests. The problem occurs any time javascript code running on site attempts to call out to a location outside the current domain. Browsers will prohibit these kinds of Ajax requests, but the workaround is so common that it makes the restriction quite trivial.</p>
+
+<p>Although browsers will restrict the Ajax call, they will happily load and run Javascript at a location set in the &#8220;src&#8221; attribute of a script tag. The strategy is then to, instead of calling out with Ajax, to call out with a script tag. When you append the script tag into a document, it gets fetched and executed.</p>
+
+<pre><code data-language="coffeescript">injectScript: (d) -&gt;
+    script = d.createElement("script")
+    script.setAttribute("src", "http://endpoint.com")
+    d.head.appendChild(script)
+</code></pre>
+
+<p>In order to do something with what that call returns, the endpoint needs to return JSONP. Executed JSONP calls a method on the client-side that has been defined by you, most likely in the same piece of Javascript that injected the script tag. For example, JSONP returned from the server might look something like:</p>
+
+<pre><code data-language="javascript">executeResponse({"some": "JSON", "data": "here"})</code></pre>
+
+<p>That piece of code is returned from your endpoint, and evaluated on the client-side where you have previously defined the executeResponse method. It&#8217;s a little tricky, <a href="http://en.wikipedia.org/wiki/JSONP">Wikipedia</a>, <a href="http://www.devproconnections.com/article/aspnet2/ajax-cross-domain-142169">Dino Esposito</a>, and my partner <a href="http://twitter.com/joshowens">@joshowens</a> are all good resources on this subject.</p>
+
+<p>That hurdle surpassed, I was able to build enough infrastructure to load some appropriate HTML and Javascript from the ShareBelt server based on where the visitor had come from, and capture an impression on the backend.</p>
+
+<p>The bulk of that returned code is publicly-provided snippets for loading Facebook and Twitter sharing widgets. So, at this point in the project, I could render the belt and widgets, and people could do the sharing. But how was I going to capture and record the actions that users took with these third-party tools?</p>
+
+<p>Luckily, this didn&#8217;t turn out to be as much of a challenge as I expected. I found that both Twitter and Facebook platforms provided a pretty full featured system for triggering callbacks on events. Twitter&#8217;s is called <a href="https://dev.twitter.com/docs/intents">Web Intents</a> and allowed me to trigger code on a click of the Tweet button, and the Tweet itself. Facebook&#8217;s Like and Share callbacks I configured via the <a href="http://developers.facebook.com/docs/reference/javascript/">FB.Event.subscribe()</a> API. Read Facebook&#8217;s <a href="http://developers.facebook.com/docs/reference/javascript">Javascript SDK</a> page to get started with that.</p>
+
+<p>What kind of code did I want to execute with these callbacks? More cross domain Javascript requests, of course! Once you recognize the script injection pattern, you see it everywhere. In fact, both of the publicly-available Twitter and Facebook snippets are themselves using script injection to fetch and render their sharing widgets ( and do who knows what else ).</p>
+
+<h2>48 Hours</h2>
+
+<p>Time did not turn out to be as big of a challenge as I expected with respect to coding. I don&#8217;t think my code is completely horrible, but I did take some shortcuts. The scope of the minimum viable product we laid out were manageable.</p>
+
+<p>I did feel some urgency and so I didn&#8217;t test drive. It felt ok, until it didn&#8217;t. At some point the discomfort of cowboy coding overtakes the speed benefit you get from it. A little more than halfway through the competition, about 10&#160;o&#8217;clock on Saturday night, I spent my last  couple of hours putting in <a href="http://pivotal.github.com/jasmine/">Jasmine</a> and refactoring the bulk of my Javascript code into a classes that I could test. I learned things. It became apparent from this experience why it&#8217;s bad to access the document object directly from within a class. I couldn&#8217;t test the code in the absence of a document object. Mocking and passing the document into the class broke dependency, and allowed me to take control. It reminded me of what I like so much about coding Javascript. Objects are so easily mockable and re-shapable.</p>
+
+<div style="margin: 30px 0 30px 0; text-align:center; width: 100%"><img src="http://media.tumblr.com/tumblr_mcfc9zDlms1r9fv8b.png"/></div>
+
+<p>Time was a factor in design and marketing. <a href="http://twitter.com/nerdyllama">@nerdyllama</a>, our designer was not able to get much direction from us, and was not able to iterate as quickly as we could. We failed to effectively plan for setting up demonstrations of the product in action, and we even failed to put Sharebelt on the Sharebelt landing page! Our ranking definitely suffered as a result of poor planning in the presentation of our application.</p>
+
+<h2>New-to-Me Tools</h2>
+
+<p>I&#8217;m used to Heroku, but the Rumble was hosted on Linode, and we did deploys with capistrano. We were using <a href="http://campfirenow.com/">Campfire</a> to keep in constant contact, and one of the first things Josh did was to set up <a href="https://github.com/technicalpickles/capistrano-campfire">capistro-campfire</a>. Whenever a team-member did a deploy, campfire posted a link to the git commit so we could see the new code and diffs. With large teams or large projects, this might be overkill. But in a small team working on small overlapping pieces of code on a tight schedule it was really, really handy.</p>
+
+<p>The other cool tool was the <a href="http://nvd3.com/">NVD3</a> charting library. The interface reminded me a lot of <a href="http://www.highcharts.com">Highcharts</a>, I can&#8217;t say I prefer one to the other. The series plotting made a little more sense to me out of the box, and NVD3 might have a slight edge on the presentation as well. I&#8217;ve been impressed by both, but if you&#8217;ve had any issues with Highcharts give NVD3 a try.</p>
+
+<h2>Rumble Regrets</h2>
+
+<p>As I mentioned before, a lack of a plan for presenting the product is my biggest regret. We have a working application that touches on some pretty interesting and relevant technologies, but we left it up to the judges to figure out how to use it. The irony is that most of this most essential planning work could have been done legally in the weeks leading up to the competition. Live and learn!</p>
+
+<h2>Conclusion</h2>
+
+<p>When the clock struck 8PM on Sunday night, I took a deep breath. The feeling was surreal. The whole weekend had happened, I had learned a ton of new stuff, and I had a pretty tangible product sitting in front of me. I had a strong feeling of satisfaction and accomplishment. I would definitely do this again.</p>
+
+<p>Rumble applications have a history of becoming real products. As for <a href="http://sharebelt.com/">Sharebelt</a>, we plan to get it in front of people and continue development. Is it going to make a million-dollars? I have no clue. But thanks to the motivation and focus provided by the competition, it&#8217;s more than an idea, which is where 99% of products begin and end. Rumble on!</p>
+
+    </div>
+    <div class="three columns">
+      <h3>Meta</h3>
+      <ul>
+        <li>By: </li>
+      </ul>
+      <h3>Sidebar</h3>
+      <p>Search and all that jazz.</p>
+    </div>
+  </div>
+
+  <!-- Included JS Files (Compressed) -->
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/foundation.min.js"></script>
+  <script src="/javascripts/rainbow.min.js"></script>
+  <script src="/javascripts/language/generic.js"></script>
+  <script src="/javascripts/language/python.js"></script>
+  <script src="/javascripts/language/ruby.js"></script>
+  <script src="/javascripts/language/shell.js"></script>
+  <script src="/javascripts/language/coffeescript.js"></script>
+  <script src="/javascripts/language/javascript.js"></script>
+  <script>
+    $(window).load(function(){
+      $("#featured").orbit();
+    });
+  </script>
+</body>
+</html>
+

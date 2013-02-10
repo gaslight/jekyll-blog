@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>How Do I Make an Animated .gif?</title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
+  <link href="/stylesheets/themes/blackboard.css" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr.foundation.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Gaslight</h2>
+      <a href="/index.html">Back</a>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="nine columns">
+      <p>Here&#8217;s an animated gif of a certain sporting event that I saw on a certain broadcasting network&#8217;s website tonight. I expect a cease and desist any minute now, so let&#8217;s hurry.</p>
+
+<p><br/><a href="http://twitpic.com/ah4i7m" title="hey guys, I made an animated gif!"><img src="http://twitpic.com/show/thumb/ah4i7m.gif" alt="hey guys, I made an animated gif!"/></a>
+<br/><br/></p>
+
+<p>I made that (President Obama), but I don&#8217;t know if I would do it again, unless it was easier. So what&#8217;s the best way to create an animated gif with mostly free tools, or highly-recommeded cheap tools, on OS X?</p>
+
+<p>I can let you know how I did it, but I can promise you it&#8217;s horrible.</p>
+
+<ol><li style="margin-bottom: 1em">I used Quicktime Player&#8217;s File -&gt; &#8220;New Screen Recording&#8221; to record the clip, playing on the site. Win.</li>
+
+<li style="margin-bottom: 1em">I trimmed the clip in Quicktime, and attempted to upload it to several GIF-making websites. Failure all.</li>
+
+<li style="margin-bottom: 1em">I opened the clip full screen. I mashed the right arrow key four times and then took a screenshot, and repeated until the scrubber hit the end of the clip. 58 times. Work harder, not smarter.</li>
+
+<div style="float:right; text-align:center">
+<img style="margin-top:-10px" src="http://media.tumblr.com/tumblr_m8h0b5pPnz1r9fv8b.png"/><br/><img style="margin-top:-10px" src="http://media.tumblr.com/tumblr_m8gzzk6Qef1r9fv8b.png"/></div>
+<li style="margin-bottom: 1em">I needed to compile these into a .gif image. Pixelmator couldn&#8217;t do it, Preview could not hang either, Pixen kept crashing. I landed on, of all things, <a href="http://www.stone.com/GIFfun/">GIFfun</a>. Congratulations GIFfun, you have been selected!</li>
+
+
+<li style="margin-bottom: 1em">I created a workflow in OS X Automator to scale the 58 images down 33%, because screenshot-ing them all at full screen resolution (see Step 3) was a terrible idea. I don&#8217;t hear many people talk about Automator. If you need to automate stuff, Automator is the best.</li>
+
+<li style="margin-bottom: 1em">GIFfun took a little finagling at first. It&#8217;s either a little wonky, or not 100% idiot proof. There was a window that I closed, and couldn&#8217;t get back without re-opening the app. But anyway, &#8220;Load Folder&#8230;&#8221; turns out to be what I wanted. It chronologized the images in a timeline with a default delay value, and when I clicked &#8220;Make Gif&#8221;, it was damn near instanatious. I have to hand it to GIFfun on that.</li>
+</ol><p>So that&#8217;s my long story. I forgot to mention that I managed to record the Quicktime Player controls in every screenshot, which is lame. I don&#8217;t see a way around that, except to not do it that way.</p>
+
+<p>So what is the best way?</p>
+
+    </div>
+    <div class="three columns">
+      <h3>Meta</h3>
+      <ul>
+        <li>By: </li>
+      </ul>
+      <h3>Sidebar</h3>
+      <p>Search and all that jazz.</p>
+    </div>
+  </div>
+
+  <!-- Included JS Files (Compressed) -->
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/foundation.min.js"></script>
+  <script src="/javascripts/rainbow.min.js"></script>
+  <script src="/javascripts/language/generic.js"></script>
+  <script src="/javascripts/language/python.js"></script>
+  <script src="/javascripts/language/ruby.js"></script>
+  <script src="/javascripts/language/shell.js"></script>
+  <script src="/javascripts/language/coffeescript.js"></script>
+  <script src="/javascripts/language/javascript.js"></script>
+  <script>
+    $(window).load(function(){
+      $("#featured").orbit();
+    });
+  </script>
+</body>
+</html>
+

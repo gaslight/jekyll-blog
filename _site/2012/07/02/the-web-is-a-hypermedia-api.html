@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>The Web is a Hypermedia API</title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
+  <link href="/stylesheets/themes/blackboard.css" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr.foundation.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Gaslight</h2>
+      <a href="/index.html">Back</a>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="nine columns">
+      <p>If you’re struggling to wrap your head around Hypermedia APIs, the first thing you need to understand is that you actively use one every day. Unless you were just handed a printout of this article, you are using one right now.</p>
+
+<h3>The Twilight Zone</h3>
+
+<p>Imagine that you live in an alternate dimension. You want to do some online shopping, and you have just received the latest Amazon.com client. You fire it up and do a product search for “Three’s Company DVDs”. All of the product data comes down the wire. We have the names, brands, and prices of the twenty most relevent “Three’s Company” related products. After the client gets the data, it goes to work! It builds all of the urls and applies them onto all of the product data that came down, so that you can click on the DVD set that you like. Wait, no! The client doesn’t do that!</p>
+
+<p>To anybody with a passing amount of knowledge about how to build a website, the situation above seems ridiculous. In this dimension, we have a web browser that knows how to read a representation of data called HTML, and render and activate the links that the server provides in that document. The server defines where the resources reside, so naturally, the server provides the links to those resources.</p>
+
+<h3>We Didn’t Know Any Better</h3>
+
+<p>My alternate universe attempted to describe a scenario in which the web that we know and love operates like an API that I designed last year. I think a lot of people design APIs in this way, i.e. they do what they need to do right now. They provide some locations on their server that allow a third party to read or write to some resources. That doesn’t sound so bad, right? An API totally needs to do those things, but it needs to do a little bit more. APIs are by definition publicly available, they invite themselves into a realm of of other people’s stuff that you no longer have total control over. As such, some forethought needs to be given to design up front. APIs that only provide the resources, and not the locations to next resource, are taking the short view and are introducing big problems for the future evolution of your system.</p>
+
+<p>The fatal flaw will smack you soon enough. When you rolled out the API, you promised all of the people, in your meticulously crafted documentation, that the resource they want is available at location x. They, in turn, built clients around that promise, and now you badly, badly need to change that location to y. Go ahead and update that documentation and see how much it helps. Best case scenario is that you built the client, and now you have to get everybody to update it before you can get back to doing anything productive on your end. To quote <a href="https://twitter.com/#!/steveklabnik">Steve Klabnik</a>, “People are really good at screwing themselves over in the long term”.</p>
+
+<h3>Robots Like to Surf The Web Too</h3>
+
+<p>So what’s the solution? Let’s bring it back to the web to understand how we can address this. Grandma has a home page with a link people can click on to see pictures of all of her perfect grandchildren. Six months later Grandma finds a cheaper site for hosting those pictures and wants to put them there instead. As Grandma’s faithful webmaster, you update the link on her homepage to point to the new photo sharing site. Does the whole world need to update their web client now? Of course not, the link to the next resource is defined and provided by the server in the HTML it sends down, and that link just changed. I think the best short description of an API I’ve found is in Ryan Tomako’s article <a href="http://tomayko.com/writings/rest-to-my-wife">“How I Explained REST to My wife”</a>. Paraphrasing, an API is an interface for machines to use the web just like people do. APIs that don’t employ hypermedia are basically jerks that are saying to clients, “I know where to go next, but I’m going to make you guess how to get there anyway.” With a Hypermedia API you force the client to know the location of exactly one resource, “Home”.</p>
+
+<p>So applying Hypermedia to APIs provides solutions, but also really transforms the very nature of the interaction into something much cooler. APIs whose resources link to other resources become “engines of application state”. Every resource exposes it’s current state, and the paths that you can take to create, interact with, and shape it. When an API describes to you how to interact with it, clients can be designed in a static way, reactively handling changes from the server.</p>
+
+<h3>Hypermedia APIs in Practice</h3>
+
+<p>So how do you go about acheiveing this? Unfortunatley, I have little practical experience to share. I understand a few things. People who talk about REST, talk about nouns and verbs. All APIs provide the nouns, Hypermedia APIs provide the verbs too. In addition to the data the APIs traditionally provide, at every step of the way they need to describe, with links, 1) where to start 2) where you are, and 3) where you can go next.</p>
+
+<p>There are definitely some best practices around things like content negotation and media types that you can read up on, but I gather from <a href="https://twitter.com/#!/cdmwebs">Chris Moore</a> that it’s still the Wild West for Hypermedia design. Apparently making more effective use of HTTP Headers is good design, and you want to give some thought about your content format, because types like JSON and XML are not implicitly hypermedia aware, i.e. they have no baked in concept of links.</p>
+
+<h3>Acknowledgments</h3>
+
+<p>While I’m talking about what I do know, maybe it’s a good time to mention where I learned it. The impetus for all of this was <a href="https://vimeo.com/44520801">this talk</a> given by Steve Klabnik at the most recent <a href="http://cincyrb.com/">Cincy.rb</a> meetup, just a couple weeks ago. Steve’s done a ton of writing and speaking around this subject, just google him or pick up his evolving book, <a href="http://designinghypermediaapis.com/">“Designing Hypermedia APIs”</a>. The talk is an overview of what Hypermedia APIs are, why they’re important, and their philosophical implications. Thankfully, Steve gives us permissions to stop worrying and fighting about REST and focus on cool stuff. For the Rails folks, Steve recommends two gems, <a href="https://github.com/josevalim/active_model_serializers/">active_model_serializers</a> and <a href="https://github.com/spastorino/rails-api">rails-api</a></p>
+
+<p>I also highly recommend this <a href="https://vimeo.com/20781278">video presentation</a> by Jon Moore, in which he actually demos a static client. If this link between Hypermedia APIs and the web as we know it is still nebulous, this video will solidify it for you. I really like the way Jon explains things and boils down the dissertation language, translating a block of Fielding into “You do stuff by reading pages and then either following links or submitting forms.”.</p>
+
+<p>For some deep reading, I’ve heard people recommend <a href="http://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578">“Building Hypermedia APIs with HTML5 and Node”</a>. Don’t worry if you’re not a node programmer. I also want to give a shout to <a href="https://twitter.com/#!/cdmwebs/">Chris Moore</a>, who’s been our resident Hypermedia API pusher, and <a href="https://twitter.com/#!/SeanTAllen">Sean Allen</a>, who’s been harping to me about REST since before harping about REST was cool.</p>
+
+<h3>Conclusion</h3>
+
+<p>If you need inspiration in understanding hypermedia APIs, look no further than the web. The architecture and protocols for the web were designed by really smart guys who already figured this stuff out a long time ago and can be applied universally. Once I started viewing APIs through the lense of the web I know and love, it actually seems completely wrong to design one in any other way.</p>
+
+    </div>
+    <div class="three columns">
+      <h3>Meta</h3>
+      <ul>
+        <li>By: </li>
+      </ul>
+      <h3>Sidebar</h3>
+      <p>Search and all that jazz.</p>
+    </div>
+  </div>
+
+  <!-- Included JS Files (Compressed) -->
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/foundation.min.js"></script>
+  <script src="/javascripts/rainbow.min.js"></script>
+  <script src="/javascripts/language/generic.js"></script>
+  <script src="/javascripts/language/python.js"></script>
+  <script src="/javascripts/language/ruby.js"></script>
+  <script src="/javascripts/language/shell.js"></script>
+  <script src="/javascripts/language/coffeescript.js"></script>
+  <script src="/javascripts/language/javascript.js"></script>
+  <script>
+    $(window).load(function(){
+      $("#featured").orbit();
+    });
+  </script>
+</body>
+</html>
+

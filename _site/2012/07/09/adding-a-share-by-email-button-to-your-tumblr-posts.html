@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>Adding a Share by Email Button to Your Tumblr Posts </title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
+  <link href="/stylesheets/themes/blackboard.css" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr.foundation.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Gaslight</h2>
+      <a href="/index.html">Back</a>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="nine columns">
+      <p>Apparently email is still a valid way of sharing things. It may still be the best way of sharing something with one person. Every social media app has an api for &#8220;share&#8221; buttons, but there doesn&#8217;t seem to be a whole lot of code out there to steal in the way of email sharing buttons. So if you have a Tumblr blog like this one, and can run some Ruby, steal this script if you like:</p>
+
+<p><br/></p>
+
+<div class="gist"><a href="https://gist.github.com/3074150.js?file=generate_email_button_html.rb">https://gist.github.com/3074150.js?file=generate_email_button_html.rb</a></div>
+
+<p><br/></p>
+
+<p>The output is html that you can paste into your custom Tumblr theme. An anchor tag, with a mailto action, that wraps a button image. You&#8217;ll need to replace the value of &#8220;image_url&#8221; in the script ( the one here is locked down by s3 ). The rest may work out just fine for you.</p>
+
+<p>The email copy is uri-encoded and passed as the value to the &#8220;body&#8221; parameter in the mailto query string. The interface to the mailto scheme is pretty limited. I quit in my attempt to get any multipart html/text email stuff going on. The RFC states &#8220;The mailto URL is primarily intended for generation of short text messages that are actually the content of automatic processing (such as &#8220;subscribe&#8221; messages for mailing lists), not general MIME bodies.&#8221; So, yeah.</p>
+
+<p>I&#8217;m also pretty aware that I&#8217;m hacking the mailto scheme by putting a space where the &#8220;to&#8221; value should go. The idea is that an email client will pop up in a draft mode with the &#8220;to&#8221; field empty, so that the article sharer can fill it in. I got the result I wanted, but the execution seems shady.</p>
+
+<p>Leave comments. I&#8217;m interested in better ways to do this, or ideas around how to acheive richer email messages from a share by email button.</p>
+
+    </div>
+    <div class="three columns">
+      <h3>Meta</h3>
+      <ul>
+        <li>By: </li>
+      </ul>
+      <h3>Sidebar</h3>
+      <p>Search and all that jazz.</p>
+    </div>
+  </div>
+
+  <!-- Included JS Files (Compressed) -->
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/foundation.min.js"></script>
+  <script src="/javascripts/rainbow.min.js"></script>
+  <script src="/javascripts/language/generic.js"></script>
+  <script src="/javascripts/language/python.js"></script>
+  <script src="/javascripts/language/ruby.js"></script>
+  <script src="/javascripts/language/shell.js"></script>
+  <script src="/javascripts/language/coffeescript.js"></script>
+  <script src="/javascripts/language/javascript.js"></script>
+  <script>
+    $(window).load(function(){
+      $("#featured").orbit();
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>The Correct Cucumber Regex for Matching Text in Quotes</title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
+  <link href="/stylesheets/themes/blackboard.css" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr.foundation.js"></script>
+</head>
+<body>
+  <div class="row">
+    <div class="twelve columns">
+      <h2>Gaslight</h2>
+      <a href="/index.html">Back</a>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="nine columns">
+      <p>What&#8217;s the correct regular expression to use for matching text within quotes of a Cucumber step? I argue that It&#8217;s not the one suggested by Cucumber itself.</p>
+
+<p>If I run a step missing step:</p>
+
+<pre><code>When I click "Edit"
+</code></pre>
+
+<p>Cucumber will suggest:</p>
+
+<pre><code data-language="ruby">When /^I click "(.*?)"$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+</code></pre>
+
+<p>The practice for most is to copy that suggestion into their step definition file, and implement the step.</p>
+
+<p>Often I&#8217;ve run into trouble when I&#8217;ve needed to create a slightly more specific version of that step in a succeeding test:</p>
+
+<pre><code>When I click "Edit" for "Jack"
+</code></pre>
+
+<p>Running the step, I&#8217;ll get:</p>
+
+<pre><code>no link or button 'Edit" for "Jack' found (Capybara::ElementNotFound) 
+</code></pre>
+
+<p>The regex defined in our initial step is a valid match for this step, unintentionally. The regex matches everything between a quote character, and the last quote character in the string. In this case &#8216;Edit&#8221; for &#8220;Jack&#8217;.</p>
+
+<p>As proof, attempting to implement the new step using Cucumber&#8217;s recommended format yields:</p>
+
+<pre><code>Ambiguous match of "I click "Edit" for "Jack"":
+  features/step_definitions/running_stuff_steps.rb:12:in `/^I click "(.*?)"$/'
+  features/step_definitions/running_stuff_steps.rb:16:in `/^I click "(.*?)" for "(.*?)"$/'
+</code></pre>
+
+<p>Both regexes are valid matches for that step.</p>
+
+<p>So we need a regular expression to uniquely match each step. The problem regex says &#8220;match everything between the first and last quote characters&#8221;. We need it to say &#8220;match text between a quote and the next quote, regardless of where the end of the line is&#8221;. Or, in regular expression language, not this:</p>
+
+<pre><code data-language="ruby">/^I click "(.*?)"$/
+</code></pre>
+
+<p>This:</p>
+
+<pre><code data-language="ruby">/^I click "([^"]*)"$/
+</code></pre>
+
+<p>This isn&#8217;t rocket science, but I&#8217;ve witnessed a few smart people scratching their heads on this one, not wanting to spend the mental energy to switch from whatever feature they are working on to dissect regular expressions.</p>
+
+<p>Is there any good reason to default to the former over the latter? Is a pull request warranted?</p>
+
+    </div>
+    <div class="three columns">
+      <h3>Meta</h3>
+      <ul>
+        <li>By: </li>
+      </ul>
+      <h3>Sidebar</h3>
+      <p>Search and all that jazz.</p>
+    </div>
+  </div>
+
+  <!-- Included JS Files (Compressed) -->
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/foundation.min.js"></script>
+  <script src="/javascripts/rainbow.min.js"></script>
+  <script src="/javascripts/language/generic.js"></script>
+  <script src="/javascripts/language/python.js"></script>
+  <script src="/javascripts/language/ruby.js"></script>
+  <script src="/javascripts/language/shell.js"></script>
+  <script src="/javascripts/language/coffeescript.js"></script>
+  <script src="/javascripts/language/javascript.js"></script>
+  <script>
+    $(window).load(function(){
+      $("#featured").orbit();
+    });
+  </script>
+</body>
+</html>
+
