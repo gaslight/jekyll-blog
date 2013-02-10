@@ -41,7 +41,7 @@ tags:
 <li><p>Download <a href="http://dl.dropbox.com/u/1275806/rpi.img.gz">this disk image file</a>.</p></li>
 <li><p>Open a terminal window and change directory to the location into which you downloaded the disk image file above. Then expand the disk image file using this command:</p>
 
-<pre>gunzip rpi.img.gz</pre></li>
+<pre><code data-language="shell">gunzip rpi.img.gz</code></pre></li>
 <li><p>Enter this command to locate your SD card:</p>
 
 <pre>diskutil list</pre></li>
@@ -163,14 +163,14 @@ rails server</pre>
 
 <p>We are going to change this to use SQLite3 in development and test environments (which are local to your Raspberry Pi) and PostgreSQL on production (which will be at Heroku).</p>
 
-<pre>group :development, :test do
-    gem 'sqlite3'
+<pre><code data-language="ruby">group :development, :test do
+  gem 'sqlite3'
 end
 
 group :production do
-    gem 'pg', require: false
+  gem 'pg', require: false
 end
-</pre>
+</code></pre>
 
 <p>When you’re done making your changes, save them by choosing “File&#160;» Save” from the menu.</p>
 
@@ -190,11 +190,11 @@ end
 
 <p>Edit Rail’s routing file using Emacs choosing “File&#160;» Open” and selecting the “routes.rb” file within the config directory. Find the line:</p>
 
-<pre># root :to =&gt; 'welcome#index'</pre>
+<pre><code data-language="ruby"># root :to =&gt; 'welcome#index'</code></pre>
 
 <p>Change it to:</p>
 
-<pre>root :to =&gt; 'offsprings#index'</pre>
+<pre><code data-language="ruby">root :to =&gt; 'offsprings#index'</code></pre>
 
 <p>Note that there are two (2) changes:</p>
 

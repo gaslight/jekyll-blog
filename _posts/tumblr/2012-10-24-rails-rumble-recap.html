@@ -35,7 +35,7 @@ tags:
 
 <p>Although browsers will restrict the Ajax call, they will happily load and run Javascript at a location set in the &#8220;src&#8221; attribute of a script tag. The strategy is then to, instead of calling out with Ajax, to call out with a script tag. When you append the script tag into a document, it gets fetched and executed.</p>
 
-<pre><code>injectScript: (d) -&gt;
+<pre><code data-language="coffeescript">injectScript: (d) -&gt;
     script = d.createElement("script")
     script.setAttribute("src", "http://endpoint.com")
     d.head.appendChild(script)
@@ -43,8 +43,7 @@ tags:
 
 <p>In order to do something with what that call returns, the endpoint needs to return JSONP. Executed JSONP calls a method on the client-side that has been defined by you, most likely in the same piece of Javascript that injected the script tag. For example, JSONP returned from the server might look something like:</p>
 
-<pre><code>executeResponse({"some": "JSON", "data": "here"}). 
-</code></pre>
+<pre><code data-language="javascript">executeResponse({"some": "JSON", "data": "here"})</code></pre>
 
 <p>That piece of code is returned from your endpoint, and evaluated on the client-side where you have previously defined the executeResponse method. It&#8217;s a little tricky, <a href="http://en.wikipedia.org/wiki/JSONP">Wikipedia</a>, <a href="http://www.devproconnections.com/article/aspnet2/ajax-cross-domain-142169">Dino Esposito</a>, and my partner <a href="http://twitter.com/joshowens">@joshowens</a> are all good resources on this subject.</p>
 

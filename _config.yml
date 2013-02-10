@@ -6,3 +6,33 @@ markdown:    redcarpet
 server:      true
 permalink:   date
 
+authors:
+  joelturnbull:
+    name: Joel Turnbull
+    display_name: Joel
+    gravatar: c66919cb194f96c696c1da0c47354a6a
+    email: joel@gaslight.co
+    twitter: joelturnbull
+    github: joelturnbull
+  cdmwebs:
+    name: Chris Moore
+    display_name: Chris M.
+    gravatar: 12e480a364a5c19214f99b4dfe9a11d5
+    email: chrism@gaslight.co
+    twitter: cdmwebs
+    github: cdmwebs
+  tammygambrel:
+    name: Tammy Gambrel
+    display_name: Tammy
+    gravatar: 12e480a364a5c19214f99b4dfe9a11d5
+    email: tammy@gaslight.co
+    twitter: SilverSunTammy
+    github: TammyGambrel
+  superchris:
+    name: Chris Nelson
+    display_name: Chris N.
+    gravatar: 12e480a364a5c19214f99b4dfe9a11d5
+    email: chris@gaslight.co
+    twitter: superchris
+    github: superchris
+

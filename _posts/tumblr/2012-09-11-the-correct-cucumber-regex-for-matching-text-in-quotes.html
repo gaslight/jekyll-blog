@@ -13,7 +13,7 @@ tags:
 
 <p>Cucumber will suggest:</p>
 
-<pre><code>When /^I click "(.*?)"$/ do |arg1|
+<pre><code data-language="ruby">When /^I click "(.*?)"$/ do |arg1|
   pending # express the regexp above with the code you wish you had
 end
 </code></pre>
@@ -43,12 +43,12 @@ end
 
 <p>So we need a regular expression to uniquely match each step. The problem regex says &#8220;match everything between the first and last quote characters&#8221;. We need it to say &#8220;match text between a quote and the next quote, regardless of where the end of the line is&#8221;. Or, in regular expression language, not this:</p>
 
-<pre><code>/^I click "(.*?)"$/
+<pre><code data-language="ruby">/^I click "(.*?)"$/
 </code></pre>
 
 <p>This:</p>
 
-<pre><code>/^I click "([^"]*)"$/
+<pre><code data-language="ruby">/^I click "([^"]*)"$/
 </code></pre>
 
 <p>This isn&#8217;t rocket science, but I&#8217;ve witnessed a few smart people scratching their heads on this one, not wanting to spend the mental energy to switch from whatever feature they are working on to dissect regular expressions.</p>

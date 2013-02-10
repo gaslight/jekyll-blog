@@ -1,0 +1,17 @@
+.highlight {
+  background: inherit; }
+
+code {
+  font-weight: normal;
+  background-color: #ddd; }
+
+pre {
+  line-height: 1.4em;
+  margin: .5em 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #222; }
+
+pre code {
+  background: inherit; }

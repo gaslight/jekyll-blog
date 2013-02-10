@@ -17,7 +17,7 @@ tags:
 
 <p>I watched the Draper RailsCast. Installing the gem, I got a generator that I could feed an existing model class. It generated a decorator class associated to that model in a new app/decorators/ directory. The class looks like this.</p>
 
-<pre><code>class CallReportSummaryDecorator &lt; ApplicationDecorator
+<pre><code data-language="ruby">class CallReportSummaryDecorator &lt; ApplicationDecorator
    decorates :call_report_summary
 </code></pre>
 
@@ -25,7 +25,7 @@ tags:
 
 <p>I instantiate the new class in the controller, that here used to return a collection of CallReportSummary objects. CallReportSummary(s) calculate and compile some metrics, and the index page displays a table of these metrics with a row for each summary.</p>
 
-<pre><code>def index
+<pre><code data-language="ruby">def index
   @current_tab = "Statements"
   @summaries = 
     @users.collect { |user| 
@@ -41,17 +41,17 @@ end
 
 <p>Consider the following piece of code that renders user data from a report summary object into a table field:</p>
 
-<pre><code>&lt;td&gt;&lt;%= summary.display_name %&gt;&lt;%= ghost_icon(summary.user) %&gt;&lt;/td&gt;
+<pre><code data-language="ruby">&lt;td&gt;&lt;%= summary.display_name %&gt;&lt;%= ghost_icon(summary.user) %&gt;&lt;/td&gt;
 </code></pre>
 
 <p>With a helper we could clean it up a little like:</p>
 
-<pre><code>&lt;td&gt;&lt;%= display_user(summary) %&gt;&lt;/td&gt;
+<pre><code data-language="ruby">&lt;td&gt;&lt;%= display_user(summary) %&gt;&lt;/td&gt;
 </code></pre>
 
 <p>But that&#8217;s where things get screwy with helpers. Maybe a functional programmer can set me straight on this someday, but it seems more suitable for display_user to be method of the summary, as opposed to a function that acts on it.</p>
 
-<pre><code>&lt;td&gt;&lt;%= summary.display_user %&gt;&lt;/td&gt;
+<pre><code data-language="ruby">&lt;td&gt;&lt;%= summary.display_user %&gt;&lt;/td&gt;
 </code></pre>
 
 <p>Regardless of your preference there, the fact remains that there&#8217;s no intuitive way to structure gobs of helper code, in the way that standard Ruby OOP can provide.</p>
@@ -62,7 +62,7 @@ end
 
 <p>So the implementation in the decorator just becomes:</p>
 
-<pre><code>def display_user
+<pre><code data-language="ruby">def display_user
   @model.display_name + h.ghost_icon( @model.user )
 end
 </code></pre>
@@ -73,7 +73,7 @@ end
 
 <p>That user data rendering code was taken from this view that renders a table with a row for each report summary returned by the controller.</p>
 
-<pre><code>&lt;table&gt;
+<pre><code data-language="ruby">&lt;table&gt;
   &lt;thead&gt;
     &lt;tr&gt;
       &lt;th&gt;User&lt;/th&gt;
@@ -107,7 +107,7 @@ end
 
 <p>Each report row contains a checkbox that when checked and submitted, will render that single report summary object into an email statement and send it off to that particular client. The data rendered in that email statement is different from the data rendered in the above administrator&#8217;s view:</p>
 
-<pre><code>&lt;table&gt;
+<pre><code data-language="ruby">&lt;table&gt;
   &lt;thead&gt;
     &lt;tr&gt;
       &lt;th&gt;Total Amount&lt;/th&gt;
@@ -137,7 +137,7 @@ end
 
 <p>Hence, a scenario in which a particular model is displayed in two different ways. The driving idea here is that the template should not also be the view. The template should be concerned primarily with styling and markup, not with choosing the data to be displayed. We have a view decorator now that can determine that. With that in mind, my Draper-fied tables became:</p>
 
-<pre><code>&lt;table&gt;
+<pre><code data-language="ruby">&lt;table&gt;
   &lt;thead&gt;
     &lt;tr&gt;
      &lt;th&gt;User&lt;/th&gt;
@@ -163,7 +163,7 @@ end
 
 <p>And the email:</p>
 
-<pre><code>&lt;table&gt;
+<pre><code data-language="ruby">&lt;table&gt;
   &lt;thead&gt;
     &lt;tr&gt;
     &lt;% table_view.table_headers.each do | table_header | %&gt;
@@ -188,7 +188,7 @@ end
 
 <p>In CallReportSummaryAppTableView:</p>
 
-<pre><code>def column_attribute_map
+<pre><code data-language="ruby">def column_attribute_map
   { 
     "Clicks" =&gt; :total_clicks,
     "Calls" =&gt; :total_calls,
@@ -203,7 +203,7 @@ end
 
 <p>In CallReportSummaryEmailTableView:</p>
 
-<pre><code>def column_attribute_map
+<pre><code data-language="ruby">def column_attribute_map
   {
     "Total Amount" =&gt; :total_customer_cost,
     "Impressions" =&gt; :total_impressions,
@@ -219,7 +219,7 @@ end
 
 <p>table_headers and attributes are methods that access that configuration:</p>
 
-<pre><code>def table_headers
+<pre><code data-language="ruby">def table_headers
   column_attribute_map.keys
 end
 
@@ -230,14 +230,14 @@ end
 
 <p>The identical implementations of those two methods in the two view classes calls for a refactoring, a superclass, so I create a CallReportSummaryTableView. Those methods can be defined once in that class and inherited. render_attribute is in the same boat, it&#8217;s implementation is:</p>
 
-<pre><code>def render_attribute(symbol)
+<pre><code data-language="ruby">def render_attribute(symbol)
    send(symbol)
 end
 </code></pre>
 
 <p>Formatted attributes that are shared between the two views, like :calls_per_click, can be implemented in the superclass view like:</p>
 
-<pre><code>def calls_per_click
+<pre><code data-language="ruby">def calls_per_click
   h.format_percentage(@model.calls_per_click)
 end
 </code></pre>
@@ -246,7 +246,7 @@ end
 
 <p>Note that the Draper gem generates an ApplicationDecorator class where general formatting methods, like format_percentage, can be defined. Using it, it&#8217;s likely you could bypass application-specific helpers entirely.</p>
 
-<pre><code>def calls_per_click
+<pre><code data-language="ruby">def calls_per_click
   format_percentage(@model.calls_per_click)
 end
 </code></pre>

@@ -42,7 +42,7 @@ match the specific answers to the persistence layer.</p>
 
 <p><strong>Sample feature, with table</strong></p>
 
-<pre><code class="cucumber">Feature: Replace common areas lighting with high efficacy fixtures
+<pre><code>Feature: Replace common areas lighting with high efficacy fixtures
   So that I know which energy efficiency improvements my property would benefit
   from, as a property owner/manager, I see a list of recommended measures for
   my property after completing the property questionnaire.
@@ -74,7 +74,7 @@ match the specific answers to the persistence layer.</p>
 
 <p><strong>The base class:</strong></p>
 
-<pre><code class="ruby">module RecommendedMeasure
+<pre><code data-language="ruby">module RecommendedMeasure
   class Measure
 
     attr_reader :property
@@ -124,7 +124,7 @@ end
 
 <p><strong>A subclass:</strong></p>
 
-<pre><code class="ruby">module RecommendedMeasure
+<pre><code data-language="ruby">module RecommendedMeasure
   class ReplaceToilets &lt; Measure
     def to_s
       "Replace toilets"

@@ -61,7 +61,8 @@ as easy as adding a new line and running <code>pod install</code>. If you&#8217;
 screencast watching type, go no further than <a href="http://nsscreencast.com/episodes/5-cocoapods">NSScreencast</a> and watch right
 now. That one&#8217;s free, but they&#8217;re well worth the subscription fee.</p>
 
-<ol><li>First, install CocoaPods. If you&#8217;ve never messed with your Ruby
+<ol>
+  <li>First, install CocoaPods. If you&#8217;ve never messed with your Ruby
 installation, it&#8217;s as easy as <code>sudo gem install cocoapods</code>. Shouldn&#8217;t take
 too long.</li>
 <li>Just this first time, run <code>pod setup</code> and CocoaPods will clone the spec
@@ -70,12 +71,11 @@ uses to learn how to find, install and configure libraries.</li>
 <li><p>Next, create and edit a Podfile. It&#8217;s case sensitive, so make sure to call
 it that. Here&#8217;s what we&#8217;ll put in there:</p>
 
-<pre>
-    platform :ios
-    xcodeproj 'MyProject.xcodeproj'
+<pre><code data-language="ruby">  platform :ios
+  xcodeproj 'MyProject.xcodeproj'
 
-    pod 'SSToolkit'
-</pre></li>
+  pod 'SSToolkit'
+</code></pre></li>
 <li>That&#8217;s it. Run <code>pod install</code> and watch the magic. The first time you
 install, CocoaPods will create a new Workspace that sets up your project
 and the CocoaPods project properly. <strong>Make sure you open the Workspace file

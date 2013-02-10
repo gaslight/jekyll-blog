@@ -1,39 +1,102 @@
 ---
 layout: post
 title: Backbone.js Views Done the Right Way
+author: superchris
 tags:
 - backbone.js
 - coffeescript
 ---
 <p><img src="https://s3.amazonaws.com/gaslight-blog/backbone.png"/></p>
-<p class="p1">As soon as you build an interesting application in backbone, one of the challenges you are likely to encounter is wanting to have composite views, or views that are contained within a larger view.  I&#8217;ve solved this problem several ways in different projects and I thought it would be fun to walk through the progression and how I&#8217;ve arrived at what I currently see as a preferred solution.  </p>
-<p class="p1">Let&#8217;s start by talking about what might seem to be the most obvious solution and why it doesn&#8217;t actually work.  We&#8217;ll use as an example a view that displays a collection of people.  Let&#8217;s assume we&#8217;d like to have a view for the table and within it, views for each row.  You might end up with a TableView like so:</p>
+<p class="p1">As soon as you build an interesting application in backbone, one
+  of the challenges you are likely to encounter is wanting to have composite
+  views, or views that are contained within a larger view.  I&#8217;ve solved
+  this problem several ways in different projects and I thought it would be fun
+  to walk through the progression and how I&#8217;ve arrived at what I
+  currently see as a preferred solution.  </p>
+<p class="p1">Let&#8217;s start by talking about what might seem to be the most
+  obvious solution and why it doesn&#8217;t actually work.  We&#8217;ll use as
+  an example a view that displays a collection of people.  Let&#8217;s assume
+  we&#8217;d like to have a view for the table and within it, views for each
+  row.  You might end up with a TableView like so:</p>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_view.coffee">https://gist.github.com/2879204.js?file=table_view.coffee</a></div>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_view.coffee"></script>
+
 <p class="p1">With the template for it being:</p>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_view_template.haml">https://gist.github.com/2879204.js?file=table_view_template.haml</a></div>
-<p class="p2">I currently using haml_coffee as my favorite templating language.  If you dig haml, it&#8217;s worth checking out.</p>
-<p class="p2">Notice the tableRow method on TableView.  Because we pass the view itself into the template function, tableRow is available to us in the template.  In it we create a TableRow, render it, and then return it&#8217;s html.  Here&#8217;s what TableRowView and it&#8217;s template looks like</p>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_view_template.haml"></script>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_row_view_no_events.coffee">https://gist.github.com/2879204.js?file=table_row_view_no_events.coffee</a></div>
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_row_view_template.haml">https://gist.github.com/2879204.js?file=table_row_view_template.haml</a></div>
-<p class="p2">And initially it all appears to work well.  We see our table with a row for each person.  Great!  But now let&#8217;s try adding an event handler that pops up an alert when we click a table cell.</p>
+<p class="p2">I currently using haml_coffee as my favorite templating language.
+   If you dig haml, it&#8217;s worth checking out.</p>
+<p class="p2">Notice the tableRow method on TableView.  Because we pass the
+  view itself into the template function, tableRow is available to us in the
+  template.  In it we create a TableRow, render it, and then return it&#8217;s
+  html.  Here&#8217;s what TableRowView and it&#8217;s template looks like</p>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_row_view_with_events.coffee">https://gist.github.com/2879204.js?file=table_row_view_with_events.coffee</a></div>
-<p class="p1">And what happens?  Precisely nothing.  What&#8217;s going on?  The problem is that the TableRowView&#8217;s element never actually gets added to the DOM.  We create a TableRowView in the tableRow method of TableView, render into it&#8217;s element, and then pull out the row view elements html and shove it into the rendered output of TableView.  We grabbed the html, but TableRowView&#8217;s element never actually made it into the DOM.  That means event binding, jQuery plugins, and all kinds of stuff just won&#8217;t work.  Not good.</p>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_row_view_no_events.coffee"></script>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_row_view_template.haml"></script>
+
+<p class="p2">And initially it all appears to work well.  We see our table with
+  a row for each person.  Great!  But now let&#8217;s try adding an event
+  handler that pops up an alert when we click a table cell.</p>
+
+<script src="https://gist.github.com/superchris/2879204.js?file=table_row_view_with_events.coffee"></script>
+
+<p class="p1">And what happens?  Precisely nothing.  What&#8217;s going on?
+   The problem is that the TableRowView&#8217;s element never actually gets
+  added to the DOM.  We create a TableRowView in the tableRow method of
+  TableView, render into it&#8217;s element, and then pull out the row view
+  elements html and shove it into the rendered output of TableView.  We grabbed
+  the html, but TableRowView&#8217;s element never actually made it into the
+  DOM.  That means event binding, jQuery plugins, and all kinds of stuff just
+  won&#8217;t work.  Not good.</p>
 <p class="p1">Let&#8217;s try another approach:</p>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_view2.coffee">https://gist.github.com/2879204.js?file=table_view2.coffee</a></div>
-<p class="p1">Here we&#8217;ve changed the tableRow method to not create the TableRowView at all, but instead to create a row element with an id.  We then add a second loop thru the collection at the end of render and create our TableRowView, passing in it&#8217;s element which we find using the id we gave it and then tell it to render.  Because the row view&#8217;s element is in the DOM at the time we create and render it, everything works.  When I first starting building complexish apps in backbone, this is how I generally did composite views.</p>
-<p class="p1">But it&#8217;s pretty clunky.  We have a second loop thru the collection for one thing, and it just doesn&#8217;t feel very clean.  The code relating to adding rows is now in two different places, and the parent seems to have pretty intimate knowledge of how the child view works.</p>
-<p class="p1">We can do better.  Backbone gives a powerful tool for decoupling in events, and we can use them here to make our code cleaner.  Let&#8217;s try another crack at TableView:</p>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_view2.coffee"></script>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_view3.coffee">https://gist.github.com/2879204.js?file=table_view3.coffee</a></div>
-<p class="p1">As you can see, we&#8217;ve removed a good bit of code.  We&#8217;ve gone back to creating our TableRowView in tableRow, but are now passing in reference to the TableView as a parentView property.  And we are no longer telling TableRowView when to render at all, instead we are broadcasting a &#8220;rendered&#8221; event that gives anyone who cares a chance to do whatever they need to do.</p>
-<p class="p1">We&#8217;re also moving responsibility for when to render and what element to render into the TableRowView.</p>
+<p class="p1">Here we&#8217;ve changed the tableRow method to not create the
+  TableRowView at all, but instead to create a row element with an id.  We then
+  add a second loop thru the collection at the end of render and create our
+  TableRowView, passing in it&#8217;s element which we find using the id we
+  gave it and then tell it to render.  Because the row view&#8217;s element is
+  in the DOM at the time we create and render it, everything works.  When I
+  first starting building complexish apps in backbone, this is how I generally
+  did composite views.</p>
+<p class="p1">But it&#8217;s pretty clunky.  We have a second loop thru the
+  collection for one thing, and it just doesn&#8217;t feel very clean.  The
+  code relating to adding rows is now in two different places, and the parent
+  seems to have pretty intimate knowledge of how the child view works.</p>
+<p class="p1">We can do better.  Backbone gives a powerful tool for decoupling
+  in events, and we can use them here to make our code cleaner.  Let&#8217;s
+  try another crack at TableView:</p>
 
-<div class="gist"><a href="https://gist.github.com/2879204.js?file=table_row_view2.coffee">https://gist.github.com/2879204.js?file=table_row_view2.coffee</a></div>
-<p class="p1">It&#8217;s not necessarily less code overall, but the parent view is much less coupled to the child view.  The child view listens to the &#8220;rendered&#8221; event and then finds her element within the parent&#8217;s element.  And it seems to make sense for the child to do this, after all she is one best equipped to know how to locate her own element since she gave herself an id in the attributes method.  In case you haven&#8217;t seen this before, backbone will use tagName and attributes to build the element for a view if you don&#8217;t pass one in, which we don&#8217;t in the case of TableRowView.</p>
-<p class="p1">The bit of this code that seems the least pleasant is the toHtml method.  This is an unfortunate hack to get the outerHtml for the element, as jQuery doesn&#8217;t seem to provide a more convenient way to do it.  Gentle reader, feel free to correct me if I&#8217;m wrong on this.</p>
-<p class="p1">Overall though, I&#8217;m happier with this approach to composite views, so much so that I&#8217;ve extracted a lot of this into a base view class in my <a href="https://github.com/gaslight/backtastic" title="backtastic">backtastic</a> project.  I&#8217;ll get into lots more detail about backtastic in an upcoming post.</p>
+<script src="https://gist.github.com/superchris/2879204.js?file=table_view3.coffee"></script>
+
+<p class="p1">As you can see, we&#8217;ve removed a good bit of code.
+   We&#8217;ve gone back to creating our TableRowView in tableRow, but are now
+  passing in reference to the TableView as a parentView property.  And we are
+  no longer telling TableRowView when to render at all, instead we are
+  broadcasting a &#8220;rendered&#8221; event that gives anyone who cares a
+  chance to do whatever they need to do.</p>
+<p class="p1">We&#8217;re also moving responsibility for when to render and
+  what element to render into the TableRowView.</p>
+
+<script src="https://gist.github.com/superchris/2879204.js?file=table_row_view2.coffee"></script>
+
+<p class="p1">It&#8217;s not necessarily less code overall, but the parent view
+  is much less coupled to the child view.  The child view listens to the
+  &#8220;rendered&#8221; event and then finds her element within the
+  parent&#8217;s element.  And it seems to make sense for the child to do this,
+  after all she is one best equipped to know how to locate her own element
+  since she gave herself an id in the attributes method.  In case you
+  haven&#8217;t seen this before, backbone will use tagName and attributes to
+  build the element for a view if you don&#8217;t pass one in, which we
+  don&#8217;t in the case of TableRowView.</p>
+<p class="p1">The bit of this code that seems the least pleasant is the toHtml
+  method.  This is an unfortunate hack to get the outerHtml for the element, as
+  jQuery doesn&#8217;t seem to provide a more convenient way to do it.  Gentle
+  reader, feel free to correct me if I&#8217;m wrong on this.</p>
+<p class="p1">Overall though, I&#8217;m happier with this approach to composite
+  views, so much so that I&#8217;ve extracted a lot of this into a base view
+  class in my <a href="https://github.com/gaslight/backtastic"
+    title="backtastic">backtastic</a> project.  I&#8217;ll get into lots more
+  detail about backtastic in an upcoming post.</p>
