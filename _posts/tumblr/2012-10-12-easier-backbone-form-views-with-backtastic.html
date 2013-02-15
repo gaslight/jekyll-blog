@@ -35,7 +35,27 @@ tags:
 
 <p>With Backtastic, here&#8217;s what the backbone view code would look like:</p>
 
-<script src="https://gist.github.com/superchris/3868572.js?file=edit_person_view.coffee"></script>
+<pre><code data-language="coffeescript">class Example.Views.EditPersonView extends Backtastic.Views.FormView
+  template: JST["edit_person_view_template"]
+  
+  constructor: (options)->
+    super
+    @occupations = options.occupations
+      
+  events:
+    "submit form": "save"
+    
+  render: ->
+    super
+    @$el.addClass "modal"
+    
+  edit: (person)->
+    @model = person
+    @render()
+    @$el.modal "show"
+  
+  close: ->
+    @$el.modal "hide"</code></pre>
 
 <p>The first thing you&#8217;ll notice is that there&#8217;s nothing in this
   code to deal with the form, either rendering it or populating it&#8217;s
@@ -48,8 +68,20 @@ tags:
 
 <p>Now let&#8217;s look at the view template:</p>
 
-<script src="https://gist.github.com/superchris/3868572.js?file=edit_person_view.hamlc"></script>
-
+<pre><code data-language="ruby">.modal-header
+  %a{class: "close", href: "#people/list"} x
+  %h3 New Person
+%form.person-form
+  .modal-body
+    %fieldset
+      = @textField(field: "first_name", label: "First Name")
+      = @textField(field: "last_name", label: "Last Name")
+      = @checkBoxField(field: "evil", label: "Evil")
+      = @dateField(field: "birth_date", label: "Birth Date", format: "yyyy-mm-dd")
+      = @selectField(field: "occupation_id", label: "Occupation", collection: @occupations)
+  .modal-footer
+    %input{type: "submit", value: "Save", class: "btn btn-primary"}</code></pre>
+    
 <p>Here we see the view helper methods that build form elements.  Again, we get
   these methods from Backtastic.FormView. They do more than just render form
   element markup, though.  What they&#8217;re actually doing is creating
@@ -98,13 +130,35 @@ tags:
   and generate a file representing their validations in a format backtastic can
   understand.  Here&#8217;s what this looks like in the example app:</p>
 
-<script src="https://gist.github.com/superchris/3868572.js?file=rails_validations.coffee"></script>
+<pre><code data-language="coffeescript">Backtastic.Rails =
+  validations: {}
+
+Backtastic.Rails.validations.Occupation = {}
+
+Backtastic.Rails.validations.Person = {"first_name":{"presence":{}},"last_name":{"format":{"with":"/^J.*/"}}}
+</code></pre>
 
 <p>Somewhere in the setup of your client side app, you can then pass this
   validation data to backtastic by calling Backtastic.applyValidations.
   Here&#8217;s what this looks like:</p>
 
-<script src="https://gist.github.com/superchris/3868572.js?file=example.js.coffee"></script>
+<pre><code data-language="coffeescript">#= require_self
+#= require_tree ./templates
+#= require_tree ./models
+#= require_tree ./views
+#= require_tree ./routers
+#= require rails_validations
+
+window.Example =
+  Models: {}
+  Collections: {}
+  Routers: {}
+  Views: {}
+
+$ ->
+  new Example.Routers.PeopleRouter()
+  Backbone.history.start()
+  Backtastic.applyValidations(Example.Models, Backtastic.Rails.validations)</code></pre>
 
 <p>The first arg is the namespace in which to find backbone model classes and
   the second arg is the validation data. The net effect is that we now have
